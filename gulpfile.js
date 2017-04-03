@@ -11,6 +11,7 @@ var sass = require('gulp-sass');
 //file-path
 var SCRIPTS_PATH = 'public/scripts/**/*.js';
 var CSS_PATH = './public/css/**/*.css';
+var SCSS_PATH = 'public/scss/**/*.scss';
 var DIST_PATH = 'public/dist';
 
 //Styles
@@ -79,5 +80,5 @@ gulp.task('watch', () => {
    livereload.listen();
    gulp.watch(SCRIPTS_PATH,['scripts']);
    // gulp.watch(CSS_PATH,['styles']);
-   gulp.watch('public/scss/**/*.scss',['styles']);
+   gulp.watch(SCSS_PATH,['styles']);
 });
