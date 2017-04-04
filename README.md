@@ -8,3 +8,4 @@ gulp file template for
 6. clean - clean dist folder
 7. live reload - watch
 8. export zip file
+9. babel - Es6 to Es5
