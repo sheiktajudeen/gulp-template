@@ -7,6 +7,15 @@ var autoprefixer = require('gulp-autoprefixer');
 var plumber = require('gulp-plumber');
 var sourcemaps = require('gulp-sourcemaps');
 var sass = require('gulp-sass');
+var babel = require('gulp-babel');
+
+//less plugins
+var less = require('gulp-less');
+var LessAutoPrefix = require('less-plugin-autoprefix');
+
+var lessautoprefix = new LessAutoPrefix({
+    browsers:['last 2 versions']
+});
 
 //file-path
 var SCRIPTS_PATH = 'public/scripts/**/*.js';
@@ -36,20 +45,50 @@ var DIST_PATH = 'public/dist';
 // });
 
 //Styles for scss
+// gulp.task('styles',  () => {
+//     console.log('starting gulp style task');
+//
+//     return gulp.src('public/scss/styles.scss')
+//         .pipe(plumber(function(err){
+//             console.log('Styles task err');
+//             console.log(err);
+//             this.emit('end');
+//         }))
+//         .pipe(sourcemaps.init())
+//         .pipe(autoprefixer())
+//         .pipe(sass({
+//             outputStyle: 'compressed'
+//         }))
+//         .pipe(sourcemaps.write())
+//         .pipe(gulp.dest(DIST_PATH))
+//         .pipe(livereload());
+// });
+//
+// //Scripts
+// gulp.task('scripts', () => {
+//    console.log('Starting scripts task');
+//
+//    return gulp.src(SCRIPTS_PATH)
+//        .pipe(uglify())
+//        .pipe(gulp.dest(DIST_PATH))
+//        .pipe(livereload());
+// });
+
+//styles for less
 gulp.task('styles',  () => {
     console.log('starting gulp style task');
 
-    return gulp.src('public/scss/styles.scss')
+    return gulp.src('public/less/styles.less')
         .pipe(plumber(function(err){
             console.log('Styles task err');
             console.log(err);
             this.emit('end');
         }))
         .pipe(sourcemaps.init())
-        .pipe(autoprefixer())
-        .pipe(sass({
-            outputStyle: 'compressed'
+        .pipe(less({
+            plugins: [lessautoprefix]
         }))
+        .pipe(minifyCss())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(DIST_PATH))
         .pipe(livereload());
@@ -57,12 +96,23 @@ gulp.task('styles',  () => {
 
 //Scripts
 gulp.task('scripts', () => {
-   console.log('Starting scripts task');
+    console.log('Starting scripts task');
 
-   return gulp.src(SCRIPTS_PATH)
-       .pipe(uglify())
-       .pipe(gulp.dest(DIST_PATH))
-       .pipe(livereload());
+    return gulp.src(SCRIPTS_PATH)
+        .pipe(plumber(function(err){
+            console.log('Scripts task error');
+            console.log(err);
+            this.emit('end');
+        }))
+        .pipe(sourcemaps.init())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(uglify())
+        .pipe(concat('scripts.js'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest(DIST_PATH))
+        .pipe(livereload());
 });
 
 //Images
@@ -80,5 +130,6 @@ gulp.task('watch', () => {
    livereload.listen();
    gulp.watch(SCRIPTS_PATH,['scripts']);
    // gulp.watch(CSS_PATH,['styles']);
-   gulp.watch(SCSS_PATH,['styles']);
+   // gulp.watch(SCSS_PATH,['styles']);
+   gulp.watch('public/less/**/*.less',['styles']);
 });
